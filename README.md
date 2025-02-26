@@ -1,105 +1,95 @@
-# Guía de Instalación y Ejecución del Proyecto
+# Proyecto: technical_test
 
-## Requisitos Previos
+## Descripción
+Este proyecto es una aplicación PHP con MySQL que utiliza Docker para su despliegue. Incluye Doctrine como ORM para la gestión de la base de datos.
 
-Antes de comenzar, asegúrate de tener instalados los siguientes componentes en tu sistema:
+## Requisitos
+Antes de comenzar, asegúrate de tener instalados los siguientes programas en tu sistema:
+- [Docker](https://www.docker.com/)
+- [Docker Compose](https://docs.docker.com/compose/)
+- [Make](https://www.gnu.org/software/make/)
 
-- **Docker**: Para la creación y gestión de contenedores.
-- **Docker Compose**: Para orquestar los contenedores de Docker.
-- **Composer**: Para gestionar las dependencias de PHP.
-
-## Pasos para Configurar y Ejecutar el Proyecto
-
-### 1. Clonar el Repositorio
-
-Abre una terminal y ejecuta:
-
-```bash
+## Instalación y Configuración
+### 1. Clonar el repositorio
+```sh
 git clone https://github.com/6abr1elMR/technical_test.git
 cd technical_test
 ```
 
-### 2. Instalar Dependencias de PHP
+### 2. Levantar los contenedores con Docker
+Ejecuta el siguiente comando para construir y levantar los contenedores de la aplicación:
+```sh
+make up
+```
+Esto iniciará los contenedores definidos en `docker-compose.yml`.
 
-Utiliza Composer para instalar las dependencias necesarias:
-
-```bash
-composer install
+### 3. Instalar dependencias de PHP
+Una vez que los contenedores estén en ejecución, instala las dependencias con Composer:
+```sh
+make install-deps
 ```
 
-### 3. Levantar los Contenedores con Docker Compose
-
-Inicia los servicios definidos en el archivo `docker-compose.yml`:
-
-```bash
-docker-compose up -d
+### 4. Acceder a la terminal del contenedor PHP
+Si necesitas ejecutar comandos dentro del contenedor de PHP, puedes abrir una terminal dentro de él con:
+```sh
+make shell-php
 ```
 
-Esto levantará los contenedores en segundo plano.
-
-### 4. Inicializar la Base de Datos
-
-Una vez que los contenedores estén en funcionamiento, ejecuta las migraciones para crear las tablas necesarias en la base 
-de datos:
-
-```bash
-docker-compose exec app php vendor/bin/doctrine-migrations migrate
+### 5. Acceder a la terminal del contenedor MySQL
+Para acceder a la base de datos MySQL dentro del contenedor:
+```sh
+make shell-mysql
 ```
 
-Este comando se ejecuta dentro del contenedor `app` y aplica las migraciones de Doctrine.
+## Uso de Makefile
+El `Makefile` contiene varios comandos útiles:
 
-### 5. Verificar el Funcionamiento
+- **Iniciar el entorno:**
+  ```sh
+  make up
+  ```
+  Construye y levanta los contenedores de la aplicación.
 
-Después de completar los pasos anteriores, el proyecto debería estar en funcionamiento. Puedes verificar accediendo a 
-`http://localhost` en tu navegador web o utilizando herramientas como `curl` o `Postman` para realizar solicitudes HTTP.
+- **Detener y eliminar los contenedores:**
+  ```sh
+  make down
+  ```
+  Detiene y elimina los contenedores.
 
-## Estructura del Proyecto
+- **Limpiar el entorno:**
+  ```sh
+  make clean
+  ```
+  Elimina volúmenes y limpia las imágenes de Docker.
 
-El proyecto tiene la siguiente estructura de directorios y archivos:
-
-```
-technical_test/
-├── src/                  # Código fuente de la aplicación
-├── tests/                # Pruebas unitarias y funcionales
-├── docker-compose.yml    # Configuración de Docker Compose
-├── Makefile              # Comandos útiles para la gestión del proyecto
-├── composer.json         # Dependencias del proyecto
-└── README.md             # Documentación del proyecto
-```
-
-## Comandos ÚTiles
-
-- **Construir los Contenedores**:
-
-  ```bash
-  docker-compose build
+- **Ver logs de PHP:**
+  ```sh
+  make logs-php
   ```
 
-- **Detener los Contenedores**:
-
-  ```bash
-  docker-compose down
+- **Ver logs de MySQL:**
+  ```sh
+  make logs-mysql
   ```
 
-- **Ejecutar Pruebas**:
-
-  ```bash
-  docker-compose exec app vendor/bin/phpunit
+- **Ver estado de los contenedores:**
+  ```sh
+  make status
   ```
+  Muestra una lista de los contenedores en ejecución.
 
-  Este comando ejecuta las pruebas definidas en el directorio `tests/`.
+## Apagar el entorno
+Para detener los contenedores, ejecuta:
+```sh
+make down
+```
 
-## Notas Adicionales
-
-- **Configuración de la Base de Datos**: Asegúrate de que los parámetros de conexión a la base de datos en el archivo de 
-configuración coincidan con los definidos en `docker-compose.yml`.
-
-- **Variables de Entorno**: Si es necesario, crea un archivo `.env` en la raíz del proyecto para definir variables de 
-entorno específicas.
-
-Para más detalles y posibles actualizaciones, consulta el repositorio oficial del proyecto en 
-[https://github.com/6abr1elMR/technical_test](https://github.com/6abr1elMR/technical_test).
+Si necesitas eliminar volúmenes y limpiar las imágenes, usa:
+```sh
+make clean
+```
 
 ---
 
-¡Espero que esta guía te sea útil para poner en marcha el proyecto! 🚀
+Este README proporciona toda la información necesaria para poner en marcha el proyecto de forma rápida y eficiente. ¡Espero que te sea útil! 🚀
+
