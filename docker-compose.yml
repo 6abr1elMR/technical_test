@@ -1,0 +1,47 @@
+version: "3.8"
+
+services:
+  php:
+    image: php:8.3-apache
+    container_name: php_app
+    working_dir: /var/www/html
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      mysql:
+        condition: service_healthy
+    ports:
+      - "8080:80"
+    environment:
+      - APACHE_RUN_USER=www-data
+      - APACHE_RUN_GROUP=www-data
+    command: >
+      sh -c "apt-get update &&
+              apt-get install -y netcat-openbsd &&
+              until nc -z mysql 3306; do sleep 5; done &&
+              a2enmod rewrite &&
+              docker-php-ext-install pdo pdo_mysql &&
+              curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer &&
+              composer install &&
+              apache2-foreground"
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: pass123
+      MYSQL_DATABASE: mydblocal
+      MYSQL_USER: user_db
+      MYSQL_PASSWORD: pass1234
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      retries: 5
+      interval: 5s
+
+volumes:
+  mysql_data:
